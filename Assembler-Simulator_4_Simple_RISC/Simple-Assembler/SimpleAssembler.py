@@ -1,5 +1,8 @@
-with open('test_case1.txt') as f:  # here test_case1.txt is an input file with assembly code
-    code = f.read().splitlines()
+import sys                                    
+code = sys.stdin.read().splitlines()
+
+# with open('test_case1.txt') as f:  # here test_case1.txt is an input file with assembly code
+#     code = f.read().splitlines()
 
 variable = []
 label = {}
@@ -244,12 +247,14 @@ for i in label:
         undef_label(i)
 
 
-labels={}
-variables={}
+labels = {}
+variables = {}
+
 
 t=0
 address=0
-#*********************************THIS LOOP WILL STORE THE ADDRESS OF ALL LABELS IN DICTIONARY*********************
+
+
 for line in code:
     if len(line)==0:
         continue
@@ -267,7 +272,6 @@ for line in code:
         labels[value[0]]=address
         
 
-#********************************* THIS LOOP WILL STORE THE ADDRESS OF ALL Variables IN DICTIONARY ***********************
 for line in code:
     if(len(line)==0):
         continue
