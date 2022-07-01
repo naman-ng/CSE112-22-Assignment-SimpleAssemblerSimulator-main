@@ -1,11 +1,10 @@
 import sys                                    
 code = sys.stdin.read().splitlines()
 
-# with open('test_case1.txt') as f:  # here test_case1.txt is an input file with assembly code
-#     code = f.read().splitlines()
 
-variable = []
-label = {}
+with open('test_case1.txt') as f:  # here test_case1.txt is an input file with assembly code
+    code = f.read().splitlines()
+
 listof_error = {
     "a": "Typos in instruction name or register name",
     "b": "Use of undefined variables",
@@ -21,6 +20,10 @@ listof_error = {
 
 register = {
     "R0": "000", "R1": "001", "R2": "010", "R3": "011", "R4": "100", "R5": "101", "R6": "110", "FLAGS": "111"
+}
+
+registers = {
+    "R0": "000", "R1": "001", "R2": "010", "R3": "011", "R4": "100", "R5": "101", "R6": "110"
 }
 
 operations = {
@@ -102,94 +105,123 @@ def typeF(value):
 
     return machinecode
 
+
+
+# -------------------------------------------ALL ERRORS----------------------------------------------------------------------------
+
 #typo in instruction, a
-def typos(address, nameof_parameter):
-    if(nameof_parameter not in operations.keys() and nameof_parameter not in register.keys()):
+def typos(address, nameof_parameter, n):
+    if(nameof_parameter not in operations.keys() and n == 1):
+        print("Line number "+ str(address) +" has an error of type: " + listof_error["a"])
+        exit()
+    elif(nameof_parameter not in register.keys() and n==0):
         print("Line number "+ str(address) +" has an error of type: " + listof_error["a"])
         exit()
 
 #undefined use of variables, b
 def undef_variable(nameof_var):
-    print(nameof_var + ": " + listof_error["b"])
+    print("Line number "+str(address) +" has an error of type: " + listof_error["b"] + " " + nameof_var)
     exit()
 
 #undefined use of labels, c
-def undef_label(nameof_var):
-    print(nameof_var + ": " + listof_error["c"])
+def undef_label(address, nameof_var):
+    print("Line number "+str(address) +" has an error of type: " + listof_error["c"] + " " + nameof_var)
+    exit()
+
+# illegal use of flags, d
+def illegal_flags(address):
+    print("Line number "+str(address) +" has an error of type: " + listof_error.error["d"])
     exit()
 
 #illegal value (greater than 8 bits), e
 def illegal_immvalue(address, immval):
     if(immval>255 or immval<0):
-        print("Line number"+str(address) +"has an error of type" + listof_error.error["e"])
+        print("Line number "+str(address) +" has an error of type: " + listof_error.error["e"])
         exit()
 
 #label def as var ; var def as label, f
-def label_var(address, nameof_label,nameof_var):
-    if(nameof_label not in label):
-        if(nameof_label in variable):
-            print("Line number"+str(address) +"has an error of type" + listof_error["f"])
+def label_var(address, name, n):
+    if(name not in label) and n==1:
+        if(name in variable):
+            print("Line number "+str(address) +" has an error of type: " + listof_error["f"])
             exit()
     
-    if(nameof_var not in variable):
-        if(nameof_var in label):
-            print("Line number"+str(address) +"has an error of type" + listof_error["f"])
+    if(name not in variable) and n==0:
+        if(name in label):
+            print("Line number "+str(address) +" has an error of type: " + listof_error["f"])
             exit()
 
 #variable not defined in the beginning, g
 def notdefvariable_beg(address):
-    print("Line number"+str(address) +"has an error of type" + listof_error["g"])
+    print("Line number "+str(address) +" has an error of type: " + listof_error["g"])
     exit()
 
 #halt missing, h
-def miss_halt(address, immval):
-    if(immval>255 or immval<0):
-        print("Line number"+str(address) +"has an error of type" + listof_error["h"])
-        exit()
+def miss_halt(address):
+    print("Line number "+str(address) +" has an error of type " + listof_error["h"])
+    exit()
 
 #last line not halt, i
 def lastnot_hlt():
-    print("Code has an error of type" + listof_error["i"])
+    # print("Code has an error of type" + listof_error["i"])
+    print("Line number "+str(line_number) +" has an error of type " + listof_error["i"])
     exit()
 
-def generalError():
-    print(listof_error["j"])
+#General error, j
+def generalError(address):
+    print("Line number "+str(address) +" has an error of type " + listof_error["j"])
+    exit()
 
+# Variable check 
 def errorVariables(flag, line):
     if flag:
         if len(line) == 2:
             if line[1] not in variable:
                 variable.append(line[1])
+            else:
+                generalError(line_number)
         else:
-            print(listof_error["j"])
+            generalError(line_number)
     else:
         notdefvariable_beg(line_number)
 
 
 
+variable = []
+label = {}
+
 var_flag = True
 hlt_flag = True
-assembly = {}
+assembly = {} 
 line_number = 0
 
+
+# This 'for' loop mainly checks for all the error
 for line in code:
+
     line_list = list(line.split())
+
     if len(line_list) == 0:
         continue
 
     line_number += 1
-    assembly[line_number] = line_list
-
 
     if line_list[0] == "var" :
         errorVariables(var_flag, line_list)
-        variable.append(line_list[1])
         continue
+    else:
+        var_flag = False
 
 
-    if line_list[0] == "hlt" and hlt_flag == False:
+    if hlt_flag == False:
         lastnot_hlt()
 
+
+    if "FLAGS" in line_list:
+        if line_list[0] == "mov" and line_list[1] == "FLAGS" and line_list[2] in registers:
+            pass
+        else:
+            illegal_flags(line_number)
 
     if line_list[0]=="mov":
         if line_list[2][0]=="$":
@@ -201,35 +233,46 @@ for line in code:
     assembly[line_number] = line_list
 
 
-    if line_list[0][-1]== ":" :
-        label[line_list[0][0:-1]] = True
-        line_list.remove(line_list[0])
+    if line_list[0][-1] == ":" :
+        if line_list[0:-1] not in label:
+            label[line_list[0][0:-1]] = [True, line_number]
+            line_list.pop(0)
+        else:
+            generalError(line_number)
+
 
     if line_list[0] in operations.keys():
 
         if operations[line_list[0]][0] == "A":
             for i in range(1, len(line_list)):
-                typos(line_number, line_list[i])
+                typos(line_number, line_list[i], 0)
+
 
         elif operations[line_list[0]][0]=="B":
-            typos(line_number, line_list[1])
+            typos(line_number, line_list[1], 0)
             if line_list[2][0] != "$":
-                generalError()
+                generalError(line_number)
             illegal_immvalue(line_number, int(line_list[2][1:]))
+
 
         elif operations[line_list[0]][0]=="C":
             for i in range(1, len(line_list)):
-                typos(line_number, line_list[i])
+                typos(line_number, line_list[i], 0)
+
 
         elif operations[line_list[0]][0]=="D":
-            typos(line_number, line_list[1])
+            typos(line_number, line_list[1], 0)
+            label_var(line_number, line_list[2], 0)
+
             if line_list[2] not in variable:
                 undef_variable(line_list[2])
 
+
         elif operations[line_list[0]][0]=="E":
+            label_var(line_number, line_list[1], 1)
+
             if line_list[1] not in label:
-                # undef_variable(line_number)
-                label[line_list[1]] = False
+                label[line_list[1]] = [False, line_number]
 
 
         elif operations[line_list[0]][0]=="F":
@@ -237,15 +280,25 @@ for line in code:
                 lastnot_hlt()
             hlt_flag = False
     
+
     else:
-        typos(line_number, line_list[0])
+        typos(line_number, line_list[0], 1)
 
-# print(assembly)
 
+# Check is there was hlt instruction at last
+if hlt_flag ==True:
+    miss_halt(line_number)
+
+
+# Check for undefined variables
 for i in label:
-    if label[i] == False:
+    if label[i][0] == False:
         undef_label(i)
 
+
+
+
+# -------------------------------------------PRINTING STARTS----------------------------------------------------------------------------
 
 labels = {}
 variables = {}
@@ -256,29 +309,29 @@ address=0
 
 
 for line in code:
-    if len(line)==0:
+    if len(line) == 0:
         continue
-    value = list(line.split())
+    line_list = list(line.split())
     
-    if(value[0] in operations):
-        address+=1
-
-    if value[0]=="hlt":
-        labels[value[0]+":"]=address
+    if (line_list[0] in operations):
         address += 1
 
-    if(value[0][-1]==":"):
-        address+=1
-        labels[value[0]]=address
+    if (line_list[0] == "hlt"):
+        labels[line_list[0]+":"] = address
+        address += 1
+
+    if (line_list[0][-1] == ":"):
+        address += 1
+        labels[line_list[0]] = address
         
 
 for line in code:
-    if(len(line)==0):
+    if (len(line) == 0):
         continue
-    value = list(line.split())
-    if value[0]=="var" and len(value)==2:
+    line_list = list(line.split())
+    if line_list[0] == "var" and len(line_list) == 2:
         t+=1
-        variables[value[1]]=t+address
+        variables[line_list[1]]=t+address
 
 
 
@@ -287,38 +340,39 @@ for line in code:
     if(len(line)==0):
         continue
 
-    value = list(line.split())
-    if( len(value)>1 and value[0] in labels and value[1] in operations):
-        value.pop(0)
+    line_list = list(line.split())
+
+    if( len(line_list)>1 and line_list[0] in labels and line_list[1] in operations):
+        line_list.pop(0)
     
-    if value[0]=="mov":
-        if value[2][0]=="$":
-            value[0]="mov1"
+    if line_list[0]=="mov":
+        if line_list[2][0]=="$":
+            line_list[0]="mov1"
         else:
-            value[0]="mov2"
+            line_list[0]="mov2"
 
-    if value[0] in operations.keys():
+    if line_list[0] in operations.keys():
 
-        if operations[value[0]][0]=="A":
+        if operations[line_list[0]][0]=="A":
             
-            print(typeA(value[0],value[1],value[2],value[3]))
+            print(typeA(line_list[0],line_list[1],line_list[2],line_list[3]))
 
-        elif operations[value[0]][0]=="B":
+        elif operations[line_list[0]][0]=="B":
             
-            print(typeB(value[0],value[1],value[2][1:]))
+            print(typeB(line_list[0],line_list[1],line_list[2][1:]))
         
-        elif operations[value[0]][0]=="C":
+        elif operations[line_list[0]][0]=="C":
             
-            print(typeC(value[0],value[1],value[2]))
+            print(typeC(line_list[0],line_list[1],line_list[2]))
 
-        elif operations[value[0]][0]=="D":
+        elif operations[line_list[0]][0]=="D":
             
-            print(typeD(value[0],value[1], value[2]))
+            print(typeD(line_list[0],line_list[1], line_list[2]))
 
-        elif operations[value[0]][0]=="E":
+        elif operations[line_list[0]][0]=="E":
             
-            print(typeE(value[0], value[1]))
+            print(typeE(line_list[0], line_list[1]))
 
-        elif operations[value[0]][0]=="F":
+        elif operations[line_list[0]][0]=="F":
             
-            print(typeF(value[0]))
+            print(typeF(line_list[0]))
