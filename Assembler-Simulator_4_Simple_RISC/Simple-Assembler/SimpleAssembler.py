@@ -200,7 +200,7 @@ for line in code:
 
     if line_list[0][-1]== ":" :
         label[line_list[0][0:-1]] = True
-        line_list.remove(line_list[0])
+        line_list.pop(0)
 
     if line_list[0] in operations.keys():
 
