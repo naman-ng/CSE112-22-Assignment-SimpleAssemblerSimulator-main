@@ -1,9 +1,8 @@
 import sys                                    
 code = sys.stdin.read().splitlines()
 
-
-with open('test_case1.txt') as f:  # here test_case1.txt is an input file with assembly code
-    code = f.read().splitlines()
+# with open('test_case1.txt') as f:  # here test_case1.txt is an input file with assembly code
+#     code = f.read().splitlines()
 
 listof_error = {
     "a": "Typos in instruction name or register name",
@@ -68,8 +67,6 @@ def typeA(value, r1, r2, r3):
 
 
 def typeB(value,r1,num):
-    # y = bin(int(num))[2:]
-    # x = "0"*(8-len(y)) + y
     x = decimaltobinary(num)
     machinecode=operations[value][1]+register[r1]+x
 
@@ -83,8 +80,6 @@ def typeC(value, r1, r2):
 
 
 def typeD(value, r1, var):
-    # b = bin(variables[var])[2:]
-    # mem_address = "0"*(8-len(b)) + b
     mem_address = decimaltobinary(variables[var])
     machinecode = operations[value][1]+register[r1]+mem_address
 
@@ -92,8 +87,6 @@ def typeD(value, r1, var):
 
 
 def typeE(value, lbl):
-    # b=bin(labels[lbl+":"])[2:]
-    # mem_address = "0"*(8-len(b)) + b
     mem_address = decimaltobinary(labels[lbl + ":"])
     machinecode = operations[value][1] + "000" + mem_address
 
@@ -119,7 +112,7 @@ def typos(address, nameof_parameter, n):
         exit()
 
 #undefined use of variables, b
-def undef_variable(nameof_var):
+def undef_variable(address, nameof_var):
     print("Line number "+str(address) +" has an error of type: " + listof_error["b"] + " " + nameof_var)
     exit()
 
@@ -130,30 +123,30 @@ def undef_label(address, nameof_var):
 
 # illegal use of flags, d
 def illegal_flags(address):
-    print("Line number "+str(address) +" has an error of type: " + listof_error.error["d"])
+    print("Line number "+ str(address) +" has an error of type: " + listof_error["d"])
     exit()
 
 #illegal value (greater than 8 bits), e
 def illegal_immvalue(address, immval):
     if(immval>255 or immval<0):
-        print("Line number "+str(address) +" has an error of type: " + listof_error.error["e"])
+        print("Line number "+ str(address) +" has an error of type: " + listof_error["e"])
         exit()
 
 #label def as var ; var def as label, f
 def label_var(address, name, n):
     if(name not in label) and n==1:
         if(name in variable):
-            print("Line number "+str(address) +" has an error of type: " + listof_error["f"])
+            print("Line number "+ str(address) +" has an error of type: " + listof_error["f"])
             exit()
     
     if(name not in variable) and n==0:
         if(name in label):
-            print("Line number "+str(address) +" has an error of type: " + listof_error["f"])
+            print("Line number "+ str(address) +" has an error of type: " + listof_error["f"])
             exit()
 
 #variable not defined in the beginning, g
 def notdefvariable_beg(address):
-    print("Line number "+str(address) +" has an error of type: " + listof_error["g"])
+    print("Line number "+ str(address) +" has an error of type: " + listof_error["g"])
     exit()
 
 #halt missing, h
@@ -163,7 +156,6 @@ def miss_halt(address):
 
 #last line not halt, i
 def lastnot_hlt():
-    # print("Code has an error of type" + listof_error["i"])
     print("Line number "+str(line_number) +" has an error of type " + listof_error["i"])
     exit()
 
@@ -175,6 +167,8 @@ def generalError(address):
 # Variable check 
 def errorVariables(flag, line):
     if flag:
+        if line[1].isdigit():
+            generalError(line_number)
         if len(line) == 2:
             if line[1] not in variable:
                 variable.append(line[1])
@@ -234,11 +228,8 @@ for line in code:
 
 
     if line_list[0][-1] == ":" :
-        if line_list[0:-1] not in label:
-            label[line_list[0][0:-1]] = [True, line_number]
-            line_list.pop(0)
-        else:
-            generalError(line_number)
+        label[line_list[0][0:-1]] = [True, line_number]
+        line_list.pop(0)
 
 
     if line_list[0] in operations.keys():
@@ -265,7 +256,7 @@ for line in code:
             label_var(line_number, line_list[2], 0)
 
             if line_list[2] not in variable:
-                undef_variable(line_list[2])
+                undef_variable(line_number, line_list[2])
 
 
         elif operations[line_list[0]][0]=="E":
@@ -293,7 +284,7 @@ if hlt_flag ==True:
 # Check for undefined variables
 for i in label:
     if label[i][0] == False:
-        undef_label(i)
+        undef_label(label[i][1], i)
 
 
 
