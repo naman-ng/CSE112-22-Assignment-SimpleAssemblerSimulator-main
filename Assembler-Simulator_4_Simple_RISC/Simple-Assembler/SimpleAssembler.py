@@ -52,10 +52,12 @@ operations = {
 def decimaltobinary(n):
     n = int(n)
     binarycode=""
+
     while n>0:
         binarycode += str(n%2)
         n = int(n/2)
-    binarycode[::-1]
+
+    binarycode = binarycode[::-1]
     x="0"*(8-len(binarycode))
     finalcode=x+binarycode
     return finalcode
@@ -63,6 +65,7 @@ def decimaltobinary(n):
 
 def typeA(value, r1, r2, r3):
     machinecode = operations[value][1] + "00" + register[r1] + register[r2] + register[r3]
+
     return machinecode
 
 
@@ -97,6 +100,7 @@ def typeF(value):
     machinecode = operations[value][1] + "00000000000"
 
     return machinecode
+
 
 
 
@@ -151,17 +155,17 @@ def notdefvariable_beg(address):
 
 #halt missing, h
 def miss_halt(address):
-    print("Line number "+str(address) +" has an error of type " + listof_error["h"])
+    print("Line number "+str(address) +" has an error of type: " + listof_error["h"])
     exit()
 
 #last line not halt, i
 def lastnot_hlt():
-    print("Line number "+str(line_number) +" has an error of type " + listof_error["i"])
+    print("Line number "+str(line_number) +" has an error of type: " + listof_error["i"])
     exit()
 
 #General error, j
 def generalError(address):
-    print("Line number "+str(address) +" has an error of type " + listof_error["j"])
+    print("Line number "+str(address) +" has an error of type: " + listof_error["j"])
     exit()
 
 # Variable check 
@@ -178,6 +182,8 @@ def errorVariables(flag, line):
             generalError(line_number)
     else:
         notdefvariable_beg(line_number)
+
+
 
 
 
@@ -235,41 +241,63 @@ for line in code:
     if line_list[0] in operations.keys():
 
         if operations[line_list[0]][0] == "A":
-            for i in range(1, len(line_list)):
-                typos(line_number, line_list[i], 0)
-
+            if len(line_list) == 4:
+                for i in range(1, len(line_list)):
+                    typos(line_number, line_list[i], 0)
+            else:
+                generalError(line_number)
 
         elif operations[line_list[0]][0]=="B":
-            typos(line_number, line_list[1], 0)
-            if line_list[2][0] != "$":
+            if len(line_list) == 3:
+                typos(line_number, line_list[1], 0)
+                if line_list[2][0] != "$":
+                    generalError(line_number)
+                try:
+                    int(str(line_list[2])[1:])
+                except:
+                    illegal_immvalue(line_number,256)
+                illegal_immvalue(line_number, int(str(line_list[2])[1:]))
+            else:
                 generalError(line_number)
-            illegal_immvalue(line_number, int(line_list[2][1:]))
+
 
 
         elif operations[line_list[0]][0]=="C":
-            for i in range(1, len(line_list)):
-                typos(line_number, line_list[i], 0)
+            if len(line_list) == 3:
+                for i in range(1, len(line_list)):
+                    typos(line_number, line_list[i], 0)
+            else:
+                generalError(line_number)
 
 
         elif operations[line_list[0]][0]=="D":
-            typos(line_number, line_list[1], 0)
-            label_var(line_number, line_list[2], 0)
+            if len(line_list) == 3:
+                typos(line_number, line_list[1], 0)
+                label_var(line_number, line_list[2], 0)
 
-            if line_list[2] not in variable:
-                undef_variable(line_number, line_list[2])
+                if line_list[2] not in variable:
+                    undef_variable(line_number, line_list[2])
+            else:
+                generalError(line_number)
 
 
         elif operations[line_list[0]][0]=="E":
-            label_var(line_number, line_list[1], 1)
+            if len(line_list) == 2:
+                label_var(line_number, line_list[1], 1)
 
-            if line_list[1] not in label:
-                label[line_list[1]] = [False, line_number]
+                if line_list[1] not in label:
+                    label[line_list[1]] = [False, line_number]
+            else:
+                generalError(line_number)
 
 
         elif operations[line_list[0]][0]=="F":
-            if hlt_flag == False:
-                lastnot_hlt()
-            hlt_flag = False
+            if len(line_list) == 1:
+                if hlt_flag == False:
+                    lastnot_hlt()
+                hlt_flag = False
+            else:
+                generalError(line_number)
     
 
     else:
@@ -295,23 +323,30 @@ labels = {}
 variables = {}
 
 
-t=0
-address=0
+address = -1
 
 
 for line in code:
+    
     if len(line) == 0:
         continue
+
     line_list = list(line.split())
-    
-    if (line_list[0] in operations):
+
+    if line_list[0]=="mov":
+        if line_list[2][0]=="$":
+            line_list[0] = "mov1"
+        else:
+            line_list[0]="mov2"
+
+    if (line_list[0] in operations and line_list[0] != "hlt"):
         address += 1
 
-    if (line_list[0] == "hlt"):
-        labels[line_list[0]+":"] = address
+    elif (line_list[0] == "hlt"):
         address += 1
+        labels[line_list[0]] = address
 
-    if (line_list[0][-1] == ":"):
+    elif (line_list[0][-1] == ":"):
         address += 1
         labels[line_list[0]] = address
         
@@ -320,20 +355,19 @@ for line in code:
     if (len(line) == 0):
         continue
     line_list = list(line.split())
-    if line_list[0] == "var" and len(line_list) == 2:
-        t+=1
-        variables[line_list[1]]=t+address
-
-
+    if line_list[0] == "var" :
+        address+=1
+        variables[line_list[1]] = address
 
 
 for line in code:
+
     if(len(line)==0):
         continue
 
     line_list = list(line.split())
 
-    if( len(line_list)>1 and line_list[0] in labels and line_list[1] in operations):
+    if ( len(line_list)>1 and line_list[0] in labels and line_list[1] in operations):
         line_list.pop(0)
     
     if line_list[0]=="mov":
