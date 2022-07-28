@@ -1,8 +1,8 @@
-# import sys
-# code = sys.stdin.read().splitlines()
+import sys
+code = sys.stdin.read().splitlines()
 
-with open('test_case1.txt') as f:  # here test_case1.txt is an input file with assembly code
-    code = f.read().splitlines()
+# with open('test_case1.txt') as f:  # here test_case1.txt is an input file with assembly code
+#     code = f.read().splitlines()
 
 listof_error = {
     "a": "Typos in instruction name or register name",

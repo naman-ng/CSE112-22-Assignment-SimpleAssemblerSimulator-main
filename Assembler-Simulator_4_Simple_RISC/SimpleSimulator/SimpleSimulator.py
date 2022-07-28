@@ -1,8 +1,8 @@
-with open('test_case1.txt') as f:  # here test_case1.txt is an input file with assembly code
-    code = f.read().splitlines()
+# with open('test_case1.txt') as f:  # here test_case1.txt is an input file with assembly code
+#     code = f.read().splitlines()
 
-# import sys
-# code = sys.stdin.read().splitlines()
+import sys
+code = sys.stdin.read().splitlines()
 
 
 assembly = []
@@ -15,7 +15,10 @@ labelCount = 1
 varCount = 1
 var_value = {}
 register_val = {}
-
+flagv = 0 
+flagl = 0 
+flagg = 0
+flage = 0
 
 reg_map = {
     "000": "R0",
@@ -31,57 +34,57 @@ reg_map = {
 for i in reg_map.values():
     register_val[i] = 0
 
-# op_mapping = {
-#     "10000": ["add", "A"],
-#     "10001": ["sub", "A"],
-#     "10010": ["mov", "B"],
-#     "10011": ["mov", "C"],
-#     "10100": ["ld", "D"],
-#     "10101": ["st", "D"],
-#     "10110": ["mul", "A"],
-#     "10111": ["div", "C"],
-#     "11000": ["rs", "B"],
-#     "11001": ["ls", "B"],
-#     "11010": ["xor", "A"],
-#     "11011": ["or", "A"],
-#     "11100": ["and", "A"],
-#     "11101": ["not", "C"],
-#     "11110": ["cmp", "C"],
-#     "11111": ["jmp", "E"],
-#     "01100": ["jlt", "E"],
-#     "01101": ["jgt", "E"],
-#     "01111": ["je", "E"],
-#     "01010": ["hlt", "F"],
-#   "00000": ["addf","A"],
-#   "00001": ["subf","A"],
-#   "00010": ["movf","B"]
-# }
-
 op_mapping = {
-    "00000": ["add", "A"],
-    "00001": ["sub", "A"],
-    "00010": ["movi", "B"],
-    "00011": ["movr", "C"],
-    "00100": ["ld", "D"],
-    "00101": ["st", "D"],
-    "00110": ["mul", "A"],
-    "00111": ["div", "C"],
-    "01000": ["rs", "B"],
-    "01001": ["ls", "B"],
-    "01010": ["xor", "A"],
-    "01011": ["or", "A"],
-    "01100": ["and", "A"],
-    "01101": ["not", "C"],
-    "01110": ["cmp", "C"],
-    "01111": ["jmp", "E"],
-    "10000": ["jlt", "E"],
-    "10001": ["jgt", "E"],
-    "10010": ["je", "E"],
-    "10011": ["hlt", "F"]
-    # "10000": ["addf","A"],
-    # "10001": ["subf","A"],
-    # "10010": ["movf","B"]
+    "10000": ["add", "A"],
+    "10001": ["sub", "A"],
+    "10010": ["movi", "B"],
+    "10011": ["movr", "C"],
+    "10100": ["ld", "D"],
+    "10101": ["st", "D"],
+    "10110": ["mul", "A"],
+    "10111": ["div", "C"],
+    "11000": ["rs", "B"],
+    "11001": ["ls", "B"],
+    "11010": ["xor", "A"],
+    "11011": ["or", "A"],
+    "11100": ["and", "A"],
+    "11101": ["not", "C"],
+    "11110": ["cmp", "C"],
+    "11111": ["jmp", "E"],
+    "01100": ["jlt", "E"],
+    "01101": ["jgt", "E"],
+    "01111": ["je", "E"],
+    "01010": ["hlt", "F"],
+  "00000": ["addf","A"],
+  "00001": ["subf","A"],
+  "00010": ["movf","B"]
 }
+
+# op_mapping = {
+#     "00000": ["add", "A"],
+#     "00001": ["sub", "A"],
+#     "00010": ["movi", "B"],
+#     "00011": ["movr", "C"],
+#     "00100": ["ld", "D"],
+#     "00101": ["st", "D"],
+#     "00110": ["mul", "A"],
+#     "00111": ["div", "C"],
+#     "01000": ["rs", "B"],
+#     "01001": ["ls", "B"],
+#     "01010": ["xor", "A"],
+#     "01011": ["or", "A"],
+#     "01100": ["and", "A"],
+#     "01101": ["not", "C"],
+#     "01110": ["cmp", "C"],
+#     "01111": ["jmp", "E"],
+#     "10000": ["jlt", "E"],
+#     "10001": ["jgt", "E"],
+#     "10010": ["je", "E"],
+#     "10011": ["hlt", "F"]
+#     # "10000": ["addf","A"],
+#     # "10001": ["subf","A"],
+#     # "10010": ["movf","B"]
+# }
 
 
 def binaryTodecimal(str):
@@ -201,27 +204,28 @@ def typeE(line):
 
 for line in code:
 
-    type = op_mapping[line[0:5]][1]
-    if type == "A":
-        typeA(line)
-    elif type == "B":
-        typeB(line)
-    elif type == "C":
-        typeC(line)
-    elif type == "D":
-        typeD(line)
-    elif type == "E":
-        typeE(line)
-    elif type == "F":
-        # print("hlt")
-        assembly.append(["hlt"])
+    if (len(line)>0):
+        type = op_mapping[line[0:5]][1]
+        if type == "A":
+            typeA(line)
+        elif type == "B":
+            typeB(line)
+        elif type == "C":
+            typeC(line)
+        elif type == "D":
+            typeD(line)
+        elif type == "E":
+            typeE(line)
+        elif type == "F":
+            # print("hlt")
+            assembly.append(["hlt"])
 
 
-for i in assembly:
-    print(i, sep=" ")
+# for i in assembly:
+#     print(i, sep=" ")
 
-print(var)
-print(label)
+# print(var)
+# print(label)
 
 
 # --------------------------------------------------------------------------------------------------------------------------------------
@@ -373,29 +377,30 @@ TypeE= ["je", "jmp", "jlt", "jgt"]
 
 i = 0
 for j in range(0, len(code)):
-    if (assembly[i][0] not in TypeE) or (assembly[i-1][0] in TypeE):
-        flagv = 0
-        flagl = 0
-        flagg = 0
-        flage = 0
+    if (i>0):
+        if (assembly[i][0] not in TypeE) or (assembly[i-1][0] in TypeE):
+            flagv = 0
+            flagl = 0
+            flagg = 0
+            flage = 0
 
     # print(assembly[i])
 
     if (assembly[i][0] == "add"):
-        # register_val[assembly[i][3]] = add(register_val[assembly[i][1]], register_val[assembly[i][2]])
-        register_val[assembly[i][1]] = add(register_val[assembly[i][2]], register_val[assembly[i][3]])
+        register_val[assembly[i][3]] = add(register_val[assembly[i][1]], register_val[assembly[i][2]])
+        # register_val[assembly[i][1]] = add(register_val[assembly[i][2]], register_val[assembly[i][3]])
         pc = pc+1
         i = i+1
 
     elif (assembly[i][0] == "sub"):
-        # register_val[assembly[i][3]] = sub(register_val[assembly[i][1]], register_val[assembly[i][2]])
-        register_val[assembly[i][1]] = sub(register_val[assembly[i][2]], register_val[assembly[i][3]])
+        register_val[assembly[i][3]] = sub(register_val[assembly[i][1]], register_val[assembly[i][2]])
+        # register_val[assembly[i][1]] = sub(register_val[assembly[i][2]], register_val[assembly[i][3]])
         pc = pc+1
         i = i+1
 
     elif (assembly[i][0] == "mul"):
-        # register_val[assembly[i][3]] = mul(register_val[assembly[i][1]], register_val[assembly[i][2]])
-        register_val[assembly[i][1]] = mul(register_val[assembly[i][2]], register_val[assembly[i][3]])
+        register_val[assembly[i][3]] = mul(register_val[assembly[i][1]], register_val[assembly[i][2]])
+        # register_val[assembly[i][1]] = mul(register_val[assembly[i][2]], register_val[assembly[i][3]])
         pc = pc+1
         i = i+1
 
@@ -405,20 +410,20 @@ for j in range(0, len(code)):
         i = i+1
 
     elif (assembly[i][0] == "or"):
-        # register_val[assembly[i][3]] = orop(register_val[assembly[i][1]], register_val[assembly[i][2]])
-        register_val[assembly[i][1]] = orop(register_val[assembly[i][2]], register_val[assembly[i][3]])
+        register_val[assembly[i][3]] = orop(register_val[assembly[i][1]], register_val[assembly[i][2]])
+        # register_val[assembly[i][1]] = orop(register_val[assembly[i][2]], register_val[assembly[i][3]])
         pc = pc+1
         i = i+1
 
     elif (assembly[i][0] == "and"):
-        # register_val[assembly[i][3]] = andop(register_val[assembly[i][1]], register_val[assembly[i][2]])
-        register_val[assembly[i][1]] = andop(register_val[assembly[i][2]], register_val[assembly[i][3]])
+        register_val[assembly[i][3]] = andop(register_val[assembly[i][1]], register_val[assembly[i][2]])
+        # register_val[assembly[i][1]] = andop(register_val[assembly[i][2]], register_val[assembly[i][3]])
         pc = pc+1
         i = i+1
 
     elif (assembly[i][0] == "xor"):
-        # register_val[assembly[i][3]] = xor(register_val[assembly[i][1]], register_val[assembly[i][2]])
-        register_val[assembly[i][1]] = xor(register_val[assembly[i][2]], register_val[assembly[i][3]])
+        register_val[assembly[i][3]] = xor(register_val[assembly[i][1]], register_val[assembly[i][2]])
+        # register_val[assembly[i][1]] = xor(register_val[assembly[i][2]], register_val[assembly[i][3]])
         pc = pc+1
         i = i+1
 
@@ -438,8 +443,8 @@ for j in range(0, len(code)):
         i = i+1
 
     elif (assembly[i][0] == "movr"):
-        # register_val[assembly[i][2]] = register_val[assembly[i][1]]
-        register_val[assembly[i][1]] = register_val[assembly[i][2]]
+        register_val[assembly[i][2]] = register_val[assembly[i][1]]
+        # register_val[assembly[i][1]] = register_val[assembly[i][2]]
         pc = pc+1
         i = i+1
 
@@ -623,9 +628,17 @@ for j in range(0, len(code)):
 
 
     elif (assembly[i][0] == "hlt"):
+        pc += 1
+        i = i+1
+
+        programBinary.append([c8(pc), c16(register_val["R0"]), c16(register_val["R1"]), c16(register_val["R2"]), c16(register_val["R3"]), c16(register_val["R4"]), c16(register_val["R5"]), c16(register_val["R6"]), flagval(flagv, flagl, flagg, flage)])
+
+        programDecimal.append([pc, register_val["R0"], register_val["R1"], register_val["R2"], register_val["R3"], register_val["R4"], register_val["R5"], register_val["R6"], [flagv, flagl, flagg, flage]])
 
         break
     
+    # pc += 1
+    # i = i+1
     # print(register_val)
     # print(pc, i)
     programBinary.append([c8(pc), c16(register_val["R0"]), c16(register_val["R1"]), c16(register_val["R2"]), c16(register_val["R3"]), c16(register_val["R4"]), c16(register_val["R5"]), c16(register_val["R6"]), flagval(flagv, flagl, flagg, flage)])
@@ -643,7 +656,8 @@ for i in programBinary:
 
 
 for i in code:
-    print(i)
+    if len(i)>0:
+        print(i)
 
 for i in extra:
     # print("a")
