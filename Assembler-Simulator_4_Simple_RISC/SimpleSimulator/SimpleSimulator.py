@@ -373,17 +373,17 @@ list_label_value = list(label.values())
 programBinary = []
 programDecimal = []
 
-TypeE= ["je", "jmp", "jlt", "jgt"]
+TypeE= ["je", "jlt", "jgt"]
 
 i = 0
 for j in range(0, len(code)):
+    valueofflag = (flage or flagg or flagl or flagv)
     if (i>0):
         if (assembly[i][0] not in TypeE) or (assembly[i-1][0] in TypeE):
             flagv = 0
             flagl = 0
             flagg = 0
             flage = 0
-
     # print(assembly[i])
 
     if (assembly[i][0] == "add"):
@@ -443,7 +443,10 @@ for j in range(0, len(code)):
         i = i+1
 
     elif (assembly[i][0] == "movr"):
-        register_val[assembly[i][2]] = register_val[assembly[i][1]]
+        if assembly[i][1] == "FLAG":
+            register_val[assembly[i][2]] = valueofflag
+        else:    
+            register_val[assembly[i][2]] = register_val[assembly[i][1]]
         # register_val[assembly[i][1]] = register_val[assembly[i][2]]
         pc = pc+1
         i = i+1
@@ -493,6 +496,10 @@ for j in range(0, len(code)):
             pc = i
             continue
         else:
+            flagv = 0
+            flagl = 0
+            flagg = 0
+            flage = 0
             pc = pc+1
             i = i+1
 
@@ -509,6 +516,10 @@ for j in range(0, len(code)):
             pc = i
             continue
         else:
+            flagv = 0
+            flagl = 0
+            flagg = 0
+            flage = 0        
             pc = pc+1
             i = i+1
 
@@ -525,6 +536,10 @@ for j in range(0, len(code)):
             pc = i
             continue
         else:
+            flagv = 0
+            flagl = 0
+            flagg = 0
+            flage = 0
             pc = pc+1
             i = i+1
 
@@ -654,17 +669,21 @@ for i in programBinary:
 # for i in programDecimal:
 #     print(*i)
 
-
+lenC = 0
 for i in code:
     if len(i)>0:
+        lenC += 1
         print(i)
-
+# print("a")
 for i in extra:
     # print("a")
     print(i)
 
-for i in range(256 - len(extra) - len(code)):
+# print(len(extra))
+# print(len(code))
+for i in range(256 - len(extra) - lenC):
     print("0000000000000000")
+# print(i)
 
 
 
