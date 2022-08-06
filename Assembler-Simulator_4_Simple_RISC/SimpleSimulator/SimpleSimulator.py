@@ -8,7 +8,7 @@ code = sys.stdin.read().splitlines()
 assembly = []
 label = {}
 var = {}
-extra = []
+extra = {}
 global labelCount
 global varCount
 labelCount = 1
@@ -55,9 +55,9 @@ op_mapping = {
     "01101": ["jgt", "E"],
     "01111": ["je", "E"],
     "01010": ["hlt", "F"],
-  "00000": ["addf","A"],
-  "00001": ["subf","A"],
-  "00010": ["movf","B"]
+    "00000": ["addf","A"],
+    "00001": ["subf","A"],
+    "00010": ["movf","B"]
 }
 
 # op_mapping = {
@@ -335,13 +335,11 @@ def rs(reg, imm):
 def ld(var):
     if var not in var_value:
         var_value[var] = 0
-    extra.append(c16(int(var_value[var])))
     return var_value[var]
 
 
 def st(reg, var):
     var_value[var] = reg
-    extra.append(c16(int(var_value[var])))
     
 
 def cmp(x1, x2):
@@ -376,9 +374,9 @@ programDecimal = []
 TypeE= ["je", "jlt", "jgt"]
 
 i = 0
-# for j in range(0, len(code)):
+kk =0
 while(2>1):
-    # valueofflag = (flage or flagg or flagl or flagv)
+    kk +=1
     valueofflag = binaryTodecimal(flagval(flagv, flagl, flagg, flage))
 
     if (i>0):
@@ -457,11 +455,21 @@ while(2>1):
         i = i+1
 
     elif (assembly[i][0] == "ld"):
+        for aa in var.keys():
+            if var[aa] == assembly[i][2]:
+                extra[kk] = int(aa, 2)
+                break
+
         register_val[assembly[i][1]] = ld(assembly[i][2])
         pc = pc+1
         i = i+1
 
     elif (assembly[i][0] == "st"):
+        for aa in var.keys():
+            if var[aa] == assembly[i][2]:
+                extra[kk] = int(aa, 2)
+                break
+
         st(register_val[assembly[i][1]], assembly[i][2])
         pc = pc+1
         i = i+1
@@ -673,36 +681,22 @@ while(2>1):
 
         break
     
-    # pc += 1
-    # i = i+1
-    # print(register_val)
-    # print(pc, i)
+    
     programBinary.append([c8(pc), c16(register_val["R0"]), c16(register_val["R1"]), c16(register_val["R2"]), c16(register_val["R3"]), c16(register_val["R4"]), c16(register_val["R5"]), c16(register_val["R6"]), flagval(flagv, flagl, flagg, flage)])
 
     programDecimal.append([pc, register_val["R0"], register_val["R1"], register_val["R2"], register_val["R3"], register_val["R4"], register_val["R5"], register_val["R6"], [flagv, flagl, flagg, flage]])
 
 
-# print(programBinary)
 
 for i in programBinary:
     print(*i)
-
-# for i in programDecimal:
-#     print(*i)
 
 lenC = 0
 for i in code:
     if len(i)>0:
         lenC += 1
         print(i)
-# print("a")
-# for i in extra:
-#     # print("a")
-#     print(i)
 
-# for i in var_value:
-#     lenV += 1
-#     print(c16(var_value[i]))
 
 lenV = 0
 for i in sorted(var.keys()):
@@ -716,29 +710,37 @@ for i in sorted(var.keys()):
 # print(len(code))
 for i in range(256 - lenV - lenC):
     print("0000000000000000")
-# print(i)
+
+# print(extra)
 
 
-# print(var_value)
-
+# # Q3 -------------------GRAPH PLOT---------------------------------------------------------------
 # x_axis = []
 # y_axis = []
-# for i in range(len(programDecimal)):
-#     x_axis.append(i)
-#     y_axis.append(programDecimal[i][0])
 
-# print(x_axis)
-# print(y_axis)
+# i = 0
+# while (i < len(programDecimal)):
+#     if (i+1) in extra:
+#         x_axis.append(i+1)
+#         y_axis.append(extra[i+1])
+#         x_axis.append(i+1)
+#         y_axis.append(programDecimal[i][0])
+#         i +=1
+#     else:
+#         x_axis.append(i+1)
+#         y_axis.append(programDecimal[i][0])
+#         i +=1
 
-# #*plotting part**********
+
+# # print(x_axis)
+# # print(y_axis)
+
+# #-----------------Plotting Part------------------------------------------------------
 # import matplotlib.pyplot as plt
 # import numpy as np
 
-
 # plt.scatter(np.array(x_axis),np.array(y_axis),marker="*")
 
-
-# plt.xlabel("cycle")
-# plt.ylabel("memory")
+# plt.xlabel("Cycle")
+# plt.ylabel("Memory Address in Decimal")
 # plt.show()
-# # if mentissa is more than 5
