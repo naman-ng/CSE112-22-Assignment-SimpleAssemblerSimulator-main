@@ -376,7 +376,8 @@ programDecimal = []
 TypeE= ["je", "jlt", "jgt"]
 
 i = 0
-for j in range(0, len(code)):
+# for j in range(0, len(code)):
+while(2>1):
     valueofflag = (flage or flagg or flagl or flagv)
     if (i>0):
         if (assembly[i][0] not in TypeE) or (assembly[i-1][0] in TypeE):
@@ -476,11 +477,12 @@ for j in range(0, len(code)):
         pc = pc+1
         i = i+1
         # print(pc, i)
+        
         programBinary.append([c8(pc), c16(register_val["R0"]), c16(register_val["R1"]), c16(register_val["R2"]), c16(register_val["R3"]), c16(register_val["R4"]), c16(register_val["R5"]), c16(register_val["R6"]), flagval(flagv, flagl, flagg, flage)])
         programDecimal.append([pc, register_val["R0"], register_val["R1"], register_val["R2"], register_val["R3"], register_val["R4"], register_val["R5"], register_val["R6"], [flagv, flagl, flagg, flage]])
 
         i = binaryTodecimal(list_label_key[position])
-        pc = i
+        pc = i-1
         continue
     
     elif (assembly[i][0] == "jlt"):
@@ -489,6 +491,11 @@ for j in range(0, len(code)):
             pc = pc+1
             i = i+1
             # print(pc, i)
+            flagv = 0
+            flagl = 0
+            flagg = 0
+            flage = 0
+            
             programBinary.append([c8(pc), c16(register_val["R0"]), c16(register_val["R1"]), c16(register_val["R2"]), c16(register_val["R3"]), c16(register_val["R4"]), c16(register_val["R5"]), c16(register_val["R6"]), flagval(flagv, flagl, flagg, flage)])
             programDecimal.append([pc, register_val["R0"], register_val["R1"], register_val["R2"], register_val["R3"], register_val["R4"], register_val["R5"], register_val["R6"], [flagv, flagl, flagg, flage]])
 
@@ -509,11 +516,16 @@ for j in range(0, len(code)):
             pc = pc+1
             i = i+1
             # print(pc, i)
+            flagv = 0
+            flagl = 0
+            flagg = 0
+            flage = 0
+            
             programBinary.append([c8(pc), c16(register_val["R0"]), c16(register_val["R1"]), c16(register_val["R2"]), c16(register_val["R3"]), c16(register_val["R4"]), c16(register_val["R5"]), c16(register_val["R6"]), flagval(flagv, flagl, flagg, flage)])
             programDecimal.append([pc, register_val["R0"], register_val["R1"], register_val["R2"], register_val["R3"], register_val["R4"], register_val["R5"], register_val["R6"], [flagv, flagl, flagg, flage]])
 
             i = binaryTodecimal(list_label_key[position])
-            pc = i
+            pc = i-1
             continue
         else:
             flagv = 0
@@ -529,6 +541,11 @@ for j in range(0, len(code)):
             pc = pc+1
             i = i+1
             # print(pc, i)
+            flagv = 0
+            flagl = 0
+            flagg = 0
+            flage = 0
+            
             programBinary.append([c8(pc), c16(register_val["R0"]), c16(register_val["R1"]), c16(register_val["R2"]), c16(register_val["R3"]), c16(register_val["R4"]), c16(register_val["R5"]), c16(register_val["R6"]), flagval(flagv, flagl, flagg, flage)])
             programDecimal.append([pc, register_val["R0"], register_val["R1"], register_val["R2"], register_val["R3"], register_val["R4"], register_val["R5"], register_val["R6"], [flagv, flagl, flagg, flage]])
 
@@ -675,18 +692,27 @@ for i in code:
         lenC += 1
         print(i)
 # print("a")
-for i in extra:
-    # print("a")
-    print(i)
+# for i in extra:
+#     # print("a")
+#     print(i)
+
+# for i in var_value:
+#     lenV += 1
+#     print(c16(var_value[i]))
+
+lenV = 0
+for i in sorted(var.keys()):
+    lenV +=1
+    print(c16(var_value[var[i]]))
 
 # print(len(extra))
 # print(len(code))
-for i in range(256 - len(extra) - lenC):
+for i in range(256 - lenV - lenC):
     print("0000000000000000")
 # print(i)
 
 
-
+# print(var_value)
 
 # x_axis = []
 # y_axis = []
