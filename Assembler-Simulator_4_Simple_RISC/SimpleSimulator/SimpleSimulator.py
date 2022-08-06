@@ -290,7 +290,7 @@ def sub(x1, x2):
 
 def divide(x1, x2):
     global R0, R1
-    R0 = x1/x2
+    R0 = x1//x2
     R1 = x1 % x2
 
 
@@ -378,7 +378,9 @@ TypeE= ["je", "jlt", "jgt"]
 i = 0
 # for j in range(0, len(code)):
 while(2>1):
-    valueofflag = (flage or flagg or flagl or flagv)
+    # valueofflag = (flage or flagg or flagl or flagv)
+    valueofflag = binaryTodecimal(flagval(flagv, flagl, flagg, flage))
+
     if (i>0):
         if (assembly[i][0] not in TypeE) or (assembly[i-1][0] in TypeE):
             flagv = 0
@@ -407,6 +409,8 @@ while(2>1):
 
     elif (assembly[i][0] == "div"):
         divide(register_val[assembly[i][1]], register_val[assembly[i][2]])
+        register_val["R0"] = R0
+        register_val["R1"] = R1
         pc = pc+1
         i = i+1
 
@@ -500,7 +504,7 @@ while(2>1):
             programDecimal.append([pc, register_val["R0"], register_val["R1"], register_val["R2"], register_val["R3"], register_val["R4"], register_val["R5"], register_val["R6"], [flagv, flagl, flagg, flage]])
 
             i = binaryTodecimal(list_label_key[position])
-            pc = i
+            pc = i-1
             continue
         else:
             flagv = 0
@@ -550,7 +554,7 @@ while(2>1):
             programDecimal.append([pc, register_val["R0"], register_val["R1"], register_val["R2"], register_val["R3"], register_val["R4"], register_val["R5"], register_val["R6"], [flagv, flagl, flagg, flage]])
 
             i = binaryTodecimal(list_label_key[position])
-            pc = i
+            pc = i-1
             continue
         else:
             flagv = 0
@@ -703,7 +707,10 @@ for i in code:
 lenV = 0
 for i in sorted(var.keys()):
     lenV +=1
-    print(c16(var_value[var[i]]))
+    if var[i] in var_value:
+        print(c16(var_value[var[i]]))
+    else:
+        print("0000000000000000")
 
 # print(len(extra))
 # print(len(code))
