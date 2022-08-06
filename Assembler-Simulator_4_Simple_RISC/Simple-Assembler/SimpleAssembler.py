@@ -1,3 +1,4 @@
+# This is final
 import sys
 code = sys.stdin.read().splitlines()
 
@@ -51,6 +52,28 @@ operations = {
     "movf": ["B","00010"]
 }
 
+# operations = {
+#    "add":["A","00000"],
+#    "sub":["A", "00001"],
+#    "mov1":["B", "00010"],
+#    "mov2":["C", "00011"],
+#    "ld":["D","00100"],
+#    "st":["D","00101"],
+#    "mul":["A" ,"00110"],
+#    "div":["C","00111"],
+#    "rs":["B","01000"],
+#    "ls":["B","01001"],
+#    "xor":["A","01010"],
+#    "or":["A","01011"],
+#    "and":["A","01100"],
+#    "not":["C","01101"],
+#    "cmp":["C","01110"],
+#    "jmp":["E","01111"],
+#    "jlt":["E","10000"],
+#    "jgt":["E","10001"],
+#    "je":["E","10010"],
+#    "hlt":["F","10011"]
+# }
 
 def decimaltobinary(n):
     n = int(n)
@@ -118,6 +141,8 @@ def typeB(value, r1, num):
         x = float_To_binary(num)
     else:
         x = decimaltobinary(num)
+        # print(x)
+        # print(num)
     machinecode = operations[value][1]+register[r1]+x
 
     return machinecode
@@ -294,6 +319,10 @@ for line in code:
             pass
         else:
             illegal_flags(line_number)
+    
+    if line_list[0][-1] == ":":
+        label[line_list[0][0:-1]] = [True, line_number]
+        line_list.pop(0)
 
     if line_list[0] == "mov":
         if line_list[2][0] == "$":
@@ -302,10 +331,6 @@ for line in code:
             line_list[0] = "mov2"
 
     assembly[line_number] = line_list
-
-    if line_list[0][-1] == ":":
-        label[line_list[0][0:-1]] = [True, line_number]
-        line_list.pop(0)
 
     if line_list[0] == "movf":
         if line_list[1] in registers:
@@ -439,7 +464,7 @@ for line in code:
 
     line_list = list(line.split())
 
-    if (len(line_list) > 1 and line_list[0] in labels and line_list[1] in operations):
+    if(len(line_list) > 1 and line_list[0] in labels):
         line_list.pop(0)
 
     if line_list[0] == "mov":
@@ -447,6 +472,13 @@ for line in code:
             line_list[0] = "mov1"
         else:
             line_list[0] = "mov2"
+
+    # if (len(line_list) > 1 and line_list[0] in labels and line_list[1] in operations):
+    #     line_list.pop(0)
+
+    # print(labels)
+
+    # print(line_list)
 
     if line_list[0] in operations.keys():
 
