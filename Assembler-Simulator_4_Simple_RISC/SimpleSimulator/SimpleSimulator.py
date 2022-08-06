@@ -579,7 +579,7 @@ while(2>1):
         oo2 = binaryTodecimal(str(c16(register_val[assembly[i][2]]))[8:])
         register_val[assembly[i][3]] = add(oo1, oo2)
         pc = pc+1
-        i = i+1
+        # i = i+1
         listx.append(c8(pc))
         listy.append(pc)
         for t in register_val:
@@ -595,7 +595,7 @@ while(2>1):
             else:
                 listx.append(c16(register_val[t]))
             listy.append(register_val[t])
-
+        i +=1
         listx.append(flagval(flagv, flagl, flagg, flage))
         listy.append([flagv, flagl, flagg, flage])
 
@@ -610,7 +610,7 @@ while(2>1):
         oo2 = binaryTodecimal(str(c16(register_val[assembly[i][2]]))[8:])
         register_val[assembly[i][3]] = sub(oo1, oo2)
         pc = pc+1
-        i = i+1
+        # i = i+1
         listx.append(c8(pc))
         listy.append(pc)
         for t in register_val:
@@ -627,6 +627,7 @@ while(2>1):
                 listx.append(c16(register_val[t]))
             listy.append(register_val[t])
 
+        i +=i
         listx.append(flagval(flagv, flagl, flagg, flage))
         listy.append([flagv, flagl, flagg, flage])
 
@@ -645,7 +646,7 @@ while(2>1):
         oo1 = binaryTodecimal(str(c16(assembly[i][2]))[8:])
         register_val[assembly[i][1]] = oo1
         pc = pc+1
-        i = i+1
+        # i = i+1
         listx.append(c8(pc))
         listy.append(pc)
         for t in register_val:
@@ -661,7 +662,7 @@ while(2>1):
             else:
                 listx.append(c16(register_val[t]))
             listy.append(register_val[t])
-
+        i +=1
         listx.append(flagval(flagv, flagl, flagg, flage))
         listy.append([flagv, flagl, flagg, flage])
 
