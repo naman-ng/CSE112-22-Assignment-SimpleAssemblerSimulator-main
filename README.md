@@ -1,5 +1,6 @@
 # CSE112-22-Assignment-SimpleAssemblerSimulator
 Created a RISC Assembler and Simulator, which operates on a custom 16-bit instruction set architecture. It also provides a memory visualization after each instruction is executed.
+Languages and technologies Used: ASM, Python, Git Bash, and Automated testing.
 
 This repository holds the frame of your project.
 Please download the entire folder and make no modifications to the frame.
